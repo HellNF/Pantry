@@ -1,0 +1,4 @@
+dependencies {
+    // ... altre dipendenze ...
+    implementation 'com.google.mlkit:barcode-scanning:17.0.3'
+} 

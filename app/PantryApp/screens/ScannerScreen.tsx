@@ -4,13 +4,13 @@ import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 const { width, height } = Dimensions.get('window');
-export const ScannerScreen = ({ onScan, onClose }: { 
+export const ScannerScreen = ({ onScan }: { 
 
   onScan: (barcode: string) => void, 
-  onClose: () => void 
+   
 }) => {
   const [scanned, setScanned] = useState(false);
-  
+  const [flash, setFlash] = useState(false);
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
 
@@ -49,14 +49,18 @@ export const ScannerScreen = ({ onScan, onClose }: {
         barcodeScannerSettings={{
             barcodeTypes: ["qr"],
           }}
+        flash={flash ? "on" : "off"}
         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
       >
         <View style={styles.overlay}>
           <TouchableOpacity 
             style={styles.closeButton}
-            onPress={onClose}
+            onPress={() => {toggleCameraFacing();}}
           >
-            <Ionicons name="close" size={24} color="#000" />
+            <Ionicons name="camera-reverse-outline" size={28} color="#000" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.flashButton} onPress={() => setFlash(!flash)}>
+            <Ionicons name={flash ? "flash-off-outline" : "flash-outline"} size={28} color="#000" />
           </TouchableOpacity>
           <View style={styles.scanArea} />
         </View>
@@ -96,13 +100,20 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    bottom: 50,           // Modificato da bottom: 50
-    left: '50%',          // Modificato da left: "45%"
-    transform: [          // Aggiunto transform
-      {translateX: -27}  // Metà della larghezza del bottone (padding + icon   // Metà dell'altezza del bottone (padding + icon)
-    ],
+    bottom: 70,           // Modificato da bottom: 50
+    left: '10%',          // Modificato da left: "45%"
+    
     padding: 15,
-    backgroundColor: 'rgba(255,255,255,0.8)',
+    backgroundColor: 'rgba(255,255,255,0.7)',
+    borderRadius: 30,
+    zIndex: 1,
+  },
+  flashButton: {
+    position: 'absolute',
+    bottom: 70,
+    right: '10%',
+    padding: 15,
+    backgroundColor: 'rgba(255,255,255,0.7)',
     borderRadius: 30,
     zIndex: 1,
   },
@@ -116,7 +127,7 @@ const styles = StyleSheet.create({
     top: '25%',
     left: '10%',
     right: '10%',
-    height: '50%',
+    height: '30%',
     borderWidth: 2,
     borderColor: '#007AFF',
     borderRadius: 10,

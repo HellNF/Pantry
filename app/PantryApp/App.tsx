@@ -4,8 +4,10 @@ import { FridgeScreen } from './screens/FridgeScreen';
 import { PantryScreen } from './screens/PantryScreen';
 import { RecipesScreen } from './screens/RecipesScreen';
 import { PlannerScreen } from './screens/PlannerScreen';
+import { ScannerScreen } from './screens/ScannerScreen';
 import  MoreScreen  from './screens/MoreScreen';
 import { Navbar } from './components/Navbar';
+import NutritionScreen from './screens/NutritionScreen';
 import { styles } from './styles';
 
 export default function App() {
@@ -17,13 +19,13 @@ export default function App() {
     { id: 3, name: 'Cheese', expiryDate: '2023-07-15', daysLeft: 20 },
   ]
   const suggestedRecipes = [
-    { id: 1, title: 'Pasta al Pomodoro', ingredients: ['Pasta', 'Canned Tomatoes'] },
-    { id: 2, title: 'Cheesy Omelette', ingredients: ['Eggs', 'Cheese'] },
+    { id: 1, title: 'Pasta al Pomodoro',likes: 56, ingredients: [{amount: '1', unit: 'kg', name: 'Pasta'}, {amount: '1', unit: 'kg', name: 'Canned Tomatoes'}], instructions: [],showDetails: false },
+    { id: 2, title: 'Cheesy Omelette',likes: 10, ingredients: [{amount: '1', unit: 'kg', name: 'Eggs'}, {amount: '1', unit: 'kg', name: 'Cheese'}], instructions: [],showDetails: false },
   ]
 
   const userRecipes = [
-    { id: 1, title: 'Grandma\'s Lasagna', author: 'You', likes: 156, ingredients: [] },
-    { id: 2, title: 'Quick Stir Fry', author: 'CookMaster', likes: 2403, ingredients: [] },
+    { id: 1, title: 'Grandma\'s Lasagna', author: 'You', likes: 156, ingredients: [{amount: '1', unit: 'kg', name: 'Pasta'}, {amount: '1', unit: 'kg', name: 'Canned Tomatoes'}], instructions: ["1. Boil the pasta", "2. Add the tomatoes", "3. Serve"], showDetails: false },
+    { id: 2, title: 'Quick Stir Fry', author: 'CookMaster', likes: 2403, ingredients: [{amount: '1', unit: 'kg', name: 'Eggs'}, {amount: '1', unit: 'kg', name: 'Cheese'}], instructions: ["1. Beat the eggs", "2. Add the cheese", "3. Serve"], showDetails: false },
   ]
 
   const loyaltyCards = [
@@ -57,13 +59,17 @@ export default function App() {
   const renderContent = () => {
     switch (activeTab) {
       case "fridge":
-        return <FridgeScreen fridgeItems={fridgeItems} pantryItems={pantryItems} />;
+        return <FridgeScreen fridgeItems={fridgeItems} pantryItems={pantryItems} setActiveTab={setActiveTab} />;
       case "more":
-        return <MoreScreen />;
+        return <MoreScreen setActiveTab={setActiveTab} />;
       case "recipes":
-        return <RecipesScreen suggestedRecipes={suggestedRecipes} userRecipes={userRecipes} />;
+        return <RecipesScreen suggestedRecipes={suggestedRecipes} userRecipes={userRecipes}  />;
       case "planner":
         return <PlannerScreen  />;
+      case "scanner":
+        return <ScannerScreen onScan={() => {}}  />;
+      case "nutrition":
+        return <NutritionScreen />;
     }
   };
 

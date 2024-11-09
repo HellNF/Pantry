@@ -19,6 +19,12 @@ export const Navbar = ({ activeTab, setActiveTab }: { activeTab: string, setActi
           <Text style={styles.navText}>Recipes</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity style={styles.navItem}
+        onPress={() => setActiveTab("scanner")}>
+          <Ionicons name={activeTab=="scanner"? "barcode":"barcode-outline"} size={24}  />
+          <Text style={styles.navText}>Scan</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.navItem}
         onPress={() => setActiveTab("planner")}>
           <Ionicons name={activeTab === "planner" ? "calendar" : "calendar-outline"} size={24} color="#000" />

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, Dimensions} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from './../styles';
+import { styles } from './../styles'; 
 import { ScannerScreen } from './ScannerScreen';
 const { width, height } = Dimensions.get('window');
 interface FridgeItem {
@@ -19,10 +19,12 @@ interface PantryItem {
 
 export const FridgeScreen = ({ 
   fridgeItems,
-  pantryItems = []
+  pantryItems = [],
+  setActiveTab,
 }: { 
   fridgeItems: FridgeItem[],
-  pantryItems?: PantryItem[] 
+  pantryItems?: PantryItem[],
+  setActiveTab: (tab: string) => void, 
 }) => {
   const [showScanner, setShowScanner] = useState(false);
 
@@ -41,18 +43,13 @@ export const FridgeScreen = ({
     <View style={styles.container}>
       <TouchableOpacity 
         style={styles.scanButton}
-        onPress={() => setShowScanner(true)}
+        onPress={() => setActiveTab("scanner")}
       >
         <Ionicons name="barcode-outline" size={24} color="white" />
         <Text style={styles.scanButtonText}>Scan Barcode</Text>
       </TouchableOpacity>
 
-      {showScanner && (
-        <ScannerScreen
-          onScan={handleScan}
-          onClose={() => setShowScanner(false)}
-        />
-      )}
+      
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Fridge Contents</Text>

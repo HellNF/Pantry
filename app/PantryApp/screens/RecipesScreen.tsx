@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, TextInput, Button, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, ScrollView, TouchableOpacity, Animated } from 'react-native';
 import { Plus, Heart, Camera, X } from 'lucide-react-native';
 import { styles } from './../styles';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 interface Recipe {
   id: string | number;
@@ -15,6 +16,7 @@ interface Recipe {
   instructions: string[];
   author?: string;
   likes?: number;
+  showDetails?: boolean;
 }
 
 export const RecipesScreen = ({ suggestedRecipes, userRecipes }: { suggestedRecipes: Recipe[], userRecipes: Recipe[] }) => {
@@ -25,7 +27,9 @@ export const RecipesScreen = ({ suggestedRecipes, userRecipes }: { suggestedReci
     title: '',
     ingredients: [],
     instructions: [],
+    showDetails: false,
   });
+  const [animation] = React.useState(new Animated.Value(0));
 
   const handleAddIngredient = () => {
     setNewRecipe(prev => ({
@@ -52,6 +56,32 @@ export const RecipesScreen = ({ suggestedRecipes, userRecipes }: { suggestedReci
       instructions: [],
     });
   };
+
+  const toggleRecipe = (recipe: Recipe) => {
+    if (selectedRecipe?.id === recipe.id) {
+      // Chiudi
+      recipe.showDetails = false;
+      Animated.timing(animation, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }).start(() => setSelectedRecipe(null));
+    } else {
+      // Apri
+      recipe.showDetails = true;
+      setSelectedRecipe(recipe);
+      Animated.timing(animation, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    }
+  };
+
+  const maxHeight = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 500], // Regola questo valore in base alle tue esigenze
+  });
 
   if (isCreatingRecipe) {
     return (
@@ -180,22 +210,73 @@ export const RecipesScreen = ({ suggestedRecipes, userRecipes }: { suggestedReci
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Ricette Suggerite</Text>
         {suggestedRecipes.map((recipe) => (
-          <View key={recipe.id} style={styles.itemRow}>
-            <Text>{recipe.title}</Text>
-            <Text style={styles.smallText}>{recipe.ingredients.join(', ')}</Text>
-          </View>
+          <TouchableOpacity 
+            key={recipe.id} 
+            style={styles.recipeRow}
+            onPress={() => toggleRecipe(recipe)}
+          >
+            
+            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between',width: '100%'}}>
+              <Text>{recipe.title}</Text>
+              <Ionicons name="sparkles" size={16} color="#ffbb33"/>
+            </View>
+            {recipe?.showDetails && (
+              <View style={styles.recipeDetails}>
+                <Text style={styles.detailsTitle}>Ingredienti:</Text>
+                {recipe.ingredients.map((ing, index) => (
+                  <View key={index} style={styles.bulletListItem}>
+                    <Text style={styles.bullet}>•</Text>
+                    <Text style={styles.listItemText}>{ing.amount} {ing.unit} {ing.name}</Text>
+                  </View>
+                ))}
+                <Text style={styles.detailsTitle}>Istruzioni:</Text>
+                {recipe.instructions.map((instruction, index) => (
+                  <View key={index} style={styles.bulletListItem}>
+                    <Text style={styles.bullet}>•</Text>
+                    <Text style={styles.listItemText}>{instruction}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+          </TouchableOpacity>
         ))}
       </View>
+
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Le Tue Ricette</Text>
+        <Text style={styles.cardTitle}>Your Recipes</Text>
         {userRecipes.map((recipe) => (
-          <View key={recipe.id} style={styles.itemRow}>
-            <Text>{recipe.title}</Text>
-            <View style={styles.likeContainer}>
-              <Heart size={16} />
-              <Text style={styles.smallText}>{recipe.likes}</Text>
+          <TouchableOpacity 
+            key={recipe.id} 
+            style={styles.recipeRow}
+            onPress={() => toggleRecipe(recipe)}
+          > 
+            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between',width: '100%'}}>
+              <Text>{recipe.title}</Text>
+              <View style={styles.likeContainer}>
+              <Ionicons name="heart" size={16} color="#bf5252"/>
+                <Text style={styles.smallText}>{recipe.likes}</Text>
+              </View>
             </View>
-          </View>
+            {recipe.showDetails && (
+              
+              <View style={styles.recipeDetails}>
+              <Text style={styles.detailsTitle}>Ingredienti:</Text>
+                  { recipe.ingredients.map((ing, index) => (
+                    <View key={index} style={styles.bulletListItem}>
+                      <Text style={styles.bullet}>•</Text>
+                      <Text style={styles.listItemText}>{ing.amount} {ing.unit} {ing.name}</Text>
+                    </View>
+              ))}
+              <Text style={styles.detailsTitle}>Istruzioni:</Text>
+              {recipe.instructions.map((instruction, index) => (
+                <View key={index} style={styles.bulletListItem}>
+                  <Text style={styles.bullet}>•</Text>
+                  <Text style={styles.listItemText}>{instruction}</Text>
+                </View>
+              ))}
+              </View>
+            )}
+          </TouchableOpacity>
         ))}
       </View>
       <TouchableOpacity 

@@ -60,7 +60,7 @@ export const PlannerScreen = () => {
                 style={styles.mealCell}
               >
                 <Text style={styles.mealText}>
-                  {dayData.meals[mealType.toLowerCase() as MealType] || 'Add meal'}
+                  {dayData.meals[mealType.toLowerCase() as MealType] || (<Ionicons name='add' size={20}></Ionicons>)}
                 </Text>
               </TouchableOpacity>
             ))}

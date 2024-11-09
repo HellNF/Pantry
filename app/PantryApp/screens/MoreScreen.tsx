@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const MenuItem = ({ icon, title }: { icon: string, title: string }) => (
-  <TouchableOpacity style={styles.menuItem}>
+const MenuItem = ({ icon, title, onPress }: { icon: string, title: string, onPress?: () => void }) => (
+  <TouchableOpacity style={styles.menuItem} onPress={onPress}>
     <Ionicons name={icon as any} size={24} color="black" style={styles.menuIcon} />
     <Text style={styles.menuText}>{title}</Text>
     <Ionicons name="chevron-forward" size={24} color="#666" />
@@ -17,13 +17,14 @@ const LoyaltyCard = ({ store, cardNumber }: { store: string, cardNumber: string 
   </View>
 );
 
-export default function MoreScreen(){
+export default function MoreScreen({ setActiveTab }: { setActiveTab: (tab: string) => void }){
   return (
     <View style={styles.container}>
       <MenuItem icon="cart-outline" title="Shopping List" />
       <MenuItem icon="card-outline" title="Loyalty Cards" />
       <MenuItem icon="document-text-outline" title="Store Flyers" />
       <MenuItem icon="leaf-outline" title="Sustainability" />
+      <MenuItem icon="nutrition-outline" title="Nutrition Report" onPress={() => setActiveTab("nutrition")} />
 
       <View style={styles.loyaltyCardsSection}>
         <Text style={styles.sectionTitle}>Your Loyalty Cards</Text>

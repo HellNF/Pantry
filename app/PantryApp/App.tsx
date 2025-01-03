@@ -9,9 +9,13 @@ import  MoreScreen  from './screens/MoreScreen';
 import { Navbar } from './components/Navbar';
 import NutritionScreen from './screens/NutritionScreen';
 import { styles } from './styles';
+import { UserProvider } from './contexts/UserContext';
+import { RecipesProvider } from './contexts/RecipesContext';
+import { CommunityPosts } from './components/CommunityPosts';
+
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState("planner");
+  const [activeTab, setActiveTab] = useState("fridge");
   
   const fridgeItems = [
     { id: 1, name: 'Milk', expiryDate: '2023-06-30', daysLeft: 5 },
@@ -56,6 +60,180 @@ export default function App() {
     { id: 17, name: 'Baking Powder', quantity: 1 },
     { id: 18, name: 'Vanilla Extract', quantity: 1 }
   ]
+
+  const communityPosts = [
+    {
+      id: 1,
+      author: {
+        name: "Marco Rossi",
+        avatar: "https://i.pravatar.cc/150?img=1"
+      },
+      content: "Ho provato questa ricetta della nonna, è fantastica! 👩‍🍳 La consiglio a tutti, soprattutto per le cene in famiglia.",
+      recipe: userRecipes[0],
+      likes: 24,
+      comments: 5,
+      commentsList: [
+        {
+          id: 1,
+          author: {
+            name: "Sofia Romano",
+            avatar: "https://i.pravatar.cc/150?img=4"
+          },
+          content: "Che bello! Anche io la proverò questo weekend 😊",
+          timestamp: "1h fa"
+        },
+        {
+          id: 2,
+          author: {
+            name: "Giuseppe Verdi",
+            avatar: "https://i.pravatar.cc/150?img=3"
+          },
+          content: "Quanti strati hai fatto? Io di solito ne faccio 4",
+          timestamp: "30m fa"
+        }
+      ],
+      timestamp: "2h fa"
+    },
+    {
+      id: 2,
+      author: {
+        name: "Laura Bianchi",
+        avatar: "https://i.pravatar.cc/150?img=2"
+      },
+      content: "Questo stir-fry è perfetto per una cena veloce 🥘 L'ho preparato ieri sera ed è piaciuto tantissimo ai bambini!",
+      recipe: userRecipes[1],
+      likes: 15,
+      comments: 3,
+      commentsList: [
+        {
+          id: 1,
+          author: {
+            name: "Marco Rossi",
+            avatar: "https://i.pravatar.cc/150?img=1"
+          },
+          content: "Ottima idea! Anche ai miei bambini piace molto 👶",
+          timestamp: "3h fa"
+        },
+        {
+          id: 2,
+          author: {
+            name: "Elena Costa",
+            avatar: "https://i.pravatar.cc/150?img=6"
+          },
+          content: "Che verdure hai usato? 🥬",
+          timestamp: "4h fa"
+        },
+        {
+          id: 3,
+          author: {
+            name: "Paolo Ferrari",
+            avatar: "https://i.pravatar.cc/150?img=7"
+          },
+          content: "Proverò anche io questa versione veloce!",
+          timestamp: "4h fa"
+        }
+      ],
+      timestamp: "5h fa"
+    },
+    {
+      id: 3,
+      author: {
+        name: "Giuseppe Verdi",
+        avatar: "https://i.pravatar.cc/150?img=3"
+      },
+      content: "Ho modificato leggermente la ricetta aggiungendo più formaggio 🧀 È venuta ancora più buona!",
+      recipe: userRecipes[0],
+      likes: 42,
+      comments: 8,
+      commentsList: [
+        {
+          id: 1,
+          author: {
+            name: "Laura Bianchi",
+            avatar: "https://i.pravatar.cc/150?img=2"
+          },
+          content: "Che tipo di formaggio hai usato? 🧀",
+          timestamp: "20h fa"
+        },
+        {
+          id: 2,
+          author: {
+            name: "Sofia Romano",
+            avatar: "https://i.pravatar.cc/150?img=4"
+          },
+          content: "Io ho provato con la mozzarella, è venuta buonissima!",
+          timestamp: "22h fa"
+        }
+      ],
+      timestamp: "1g fa"
+    },
+    {
+      id: 4,
+      author: {
+        name: "Sofia Romano",
+        avatar: "https://i.pravatar.cc/150?img=4"
+      },
+      content: "Perfetta per il pranzo della domenica! Ho aggiunto anche delle melanzane grigliate come contorno 🍆",
+      recipe: userRecipes[0],
+      likes: 31,
+      comments: 6,
+      commentsList: [],
+      timestamp: "2g fa"
+    },
+    {
+      id: 5,
+      author: {
+        name: "Antonio Marino",
+        avatar: "https://i.pravatar.cc/150?img=5"
+      },
+      content: "Ho provato questa versione vegetariana sostituendo il pollo con il tofu. Davvero ottima! 🌱",
+      recipe: userRecipes[1],
+      likes: 19,
+      comments: 4,
+      commentsList: [],
+      timestamp: "3g fa"
+    },
+    {
+      id: 6,
+      author: {
+        name: "Elena Costa",
+        avatar: "https://i.pravatar.cc/150?img=6"
+      },
+      content: "Ho preparato questa ricetta per una cena con gli amici, tutti entusiasti! Grazie per la condivisione 🎉",
+      recipe: userRecipes[0],
+      likes: 27,
+      comments: 7,
+      commentsList: [],
+      timestamp: "4g fa"
+    },
+    {
+      id: 7,
+      author: {
+        name: "Paolo Ferrari",
+        avatar: "https://i.pravatar.cc/150?img=7"
+      },
+      content: "Ho aggiunto dei peperoni colorati e delle carote. Ha dato un tocco di colore in più al piatto! 🥕🫑",
+      recipe: userRecipes[1],
+      likes: 23,
+      comments: 5,
+      commentsList: [],
+      timestamp: "5g fa"
+    },
+    {
+      id: 8,
+      author: {
+        name: "Chiara Ricci",
+        avatar: "https://i.pravatar.cc/150?img=8"
+      },
+      content: "L'ho preparata per il compleanno di mia figlia. È stato un successone! 🎂",
+      recipe: userRecipes[0],
+      likes: 38,
+      comments: 9,
+      commentsList: [],
+      timestamp: "1set fa"
+    }
+  ]
+
   const renderContent = () => {
     switch (activeTab) {
       case "fridge":
@@ -63,22 +241,29 @@ export default function App() {
       case "more":
         return <MoreScreen setActiveTab={setActiveTab} />;
       case "recipes":
-        return <RecipesScreen suggestedRecipes={suggestedRecipes} userRecipes={userRecipes}  />;
+        return <RecipesScreen  communityPosts={communityPosts}/>;
       case "planner":
-        return <PlannerScreen  />;
+        return <PlannerScreen />;
       case "scanner":
-        return <ScannerScreen onScan={() => {}}  />;
+        return <ScannerScreen onScan={() => {}} />;
       case "nutrition":
         return <NutritionScreen />;
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.content}>
-        {renderContent()}
-      </ScrollView>
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-    </SafeAreaView>
+    <UserProvider>
+      <RecipesProvider>
+        
+          <SafeAreaView style={styles.container}>
+            <ScrollView style={styles.content}>
+              {renderContent()}
+            </ScrollView>
+            <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+          </SafeAreaView>
+        
+      </RecipesProvider>
+    </UserProvider>
   );
 }
+

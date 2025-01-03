@@ -1,37 +1,24 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert, Dimensions} from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from './../styles'; 
-import { ScannerScreen } from './ScannerScreen';
-const { width, height } = Dimensions.get('window');
-interface FridgeItem {
-  id: string | number;
-  name: string;
-  daysLeft: number;
-}
-
-interface PantryItem {
-  id: string | number;
-  name: string;
-  quantity: number;
-}
+import { styles } from '../styles';
 
 export const FridgeScreen = ({ 
   fridgeItems,
   pantryItems = [],
   setActiveTab,
 }: { 
-  fridgeItems: FridgeItem[],
-  pantryItems?: PantryItem[],
+  fridgeItems: any[],
+  pantryItems?: any[],
   setActiveTab: (tab: string) => void, 
 }) => {
-  const [showScanner, setShowScanner] = useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
 
-  const handleScan = (barcode: string) => {
-    Alert.alert('Codice scansionato', `Barcode: ${barcode}`);
-    setShowScanner(false);
-  };
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 1000);
+  }, []);
 
   const getStatusStyle = (daysLeft: number) => {
     if (daysLeft <= 0) return styles.expiredStatus;
@@ -40,140 +27,80 @@ export const FridgeScreen = ({
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity 
-        style={styles.scanButton}
-        onPress={() => setActiveTab("scanner")}
-      >
-        <Ionicons name="barcode-outline" size={24} color="white" />
-        <Text style={styles.scanButtonText}>Scan Barcode</Text>
-      </TouchableOpacity>
+    <ScrollView 
+      style={styles.container}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    >
+      <View style={styles.contentHeader}>
+        <Text style={styles.contentTitle}> My Storage</Text>
+        
+      </View>
 
-      
+      <View style={styles.statsContainer}>
+        <View style={styles.statCard}>
+          <Text style={styles.statNumber}>{fridgeItems.length}</Text>
+          <Text style={styles.statLabel}>Fridge</Text>
+        </View>
+        <View style={styles.statCard}>
+          <Text style={styles.statNumber}>{pantryItems.length}</Text>
+          <Text style={styles.statLabel}>Pantry</Text>
+        </View>
+        <View style={styles.statCard}>
+          <Text style={styles.statNumber}>
+            {fridgeItems.filter(item => item.daysLeft <= 5).length}
+          </Text>
+          <Text style={styles.statLabel}>Expiring</Text>
+        </View>
+      </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Fridge Contents</Text>
+      <View style={styles.fridgeCard}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>Fridge</Text>
+          <TouchableOpacity style={styles.addItemButton}>
+            <Ionicons name="add-circle" size={24} color="#2f2f31" />
+          </TouchableOpacity>
+        </View>
         {fridgeItems.map((item) => (
-          <View key={item.id} style={styles.itemRow}>
-            <Text style={styles.itemName}>{item.name}</Text>
+          <TouchableOpacity key={item.id} style={styles.itemRow}>
+            <View style={styles.itemInfo}>
+              <Text style={styles.itemName}>{item.name}</Text>
+              <Text style={styles.expiryDate}>Expire date: {item.expiryDate}</Text>
+            </View>
             <View style={[styles.statusBadge, getStatusStyle(item.daysLeft)]}>
               <Text style={styles.statusText}>
-                {item.daysLeft <= 0 ? 'Expired' : `${item.daysLeft} days left`}
+                {item.daysLeft <= 0 ? 'Scaduto' : `${item.daysLeft}d`}
               </Text>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Pantry</Text>
+      <View style={styles.pantryCard}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>Pantry</Text>
+          <TouchableOpacity style={styles.addItemButton}>
+            <Ionicons name="add-circle" size={24} color="#2f2f31" />
+          </TouchableOpacity>
+        </View>
         {pantryItems.map((item) => (
-          <View key={item.id} style={styles.itemRow}>
+          <TouchableOpacity key={item.id} style={styles.itemRow}>
             <Text style={styles.itemName}>{item.name}</Text>
-            <View style={styles.quantityBadge}>
-              <Text style={styles.quantityText}>Qty: {item.quantity}</Text>
+            <View style={styles.quantityContainer}>
+              <TouchableOpacity style={styles.quantityButton}>
+                <Ionicons name="remove" size={20} color="#2f2f31" />
+              </TouchableOpacity>
+              <Text style={styles.quantityText}>{item.quantity}</Text>
+              <TouchableOpacity style={styles.quantityButton}>
+                <Ionicons name="add" size={20} color="#2f2f31" />
+              </TouchableOpacity>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
         <LinearGradient
-            colors={['rgba(255,255,255,0)', 'rgba(255,255,255,1)']}
-            style={styles.cardGradient}
+          colors={['rgba(255,255,255,0)', 'rgba(255,255,255,1)']}
+          style={styles.cardGradient}
         />
       </View>
-
-      
-    </View>
+    </ScrollView>
   );
-};
-
-const newStyles = {
-  container: {
-    height: height,
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-    overflow: 'scroll',
-  },
-  scanButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#000',
-    padding: 16,
-    borderRadius: 8,
-    margin: 16,
-  },
-  scanButtonText: {
-    color: 'white',
-    marginLeft: 8,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  card: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    margin: 16,
-    marginTop: 0,
-  },
-  cardTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  itemRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  itemName: {
-    fontSize: 16,
-  },
-  statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 16,
-  },
-  expiredStatus: {
-    backgroundColor: '#ff4444',
-  },
-  warningStatus: {
-    backgroundColor: '#ffbb33',
-  },
-  normalStatus: {
-    backgroundColor: '#e8e8e8',
-  },
-  statusText: {
-    color: '#fff',
-    fontSize: 14,
-  },
-  quantityBadge: {
-    backgroundColor: '#e8e8e8',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 16,
-  },
-  quantityText: {
-    color: '#000',
-    fontSize: 14,
-  },
-  navbar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 12,
-    backgroundColor: 'white',
-    borderTopWidth: 1,
-    borderTopColor: '#e8e8e8',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  navItem: {
-    alignItems: 'center',
-  },
-  navText: {
-    fontSize: 12,
-    marginTop: 4,
-  },
 }; 

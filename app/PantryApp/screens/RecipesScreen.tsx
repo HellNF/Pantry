@@ -1,8 +1,11 @@
 import React from 'react';
-import { View, Text, TextInput, Button, ScrollView, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, TextInput, Button, ScrollView, TouchableOpacity, Animated, Image } from 'react-native';
 import { Plus, Heart, Camera, X } from 'lucide-react-native';
 import { styles } from './../styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { CommunityPosts } from '../components/CommunityPosts';
+import { useRecipes } from '../contexts/RecipesContext';
+import { RecipeTabBar } from '../components/RecipeTabBar';
 
 interface Recipe {
   id: string | number;
@@ -19,7 +22,36 @@ interface Recipe {
   showDetails?: boolean;
 }
 
-export const RecipesScreen = ({ suggestedRecipes, userRecipes }: { suggestedRecipes: Recipe[], userRecipes: Recipe[] }) => {
+interface CommunityPost {
+  id: string | number;
+  author: {
+    name: string;
+    avatar?: string;
+  };
+  content: string;
+  recipe?: Recipe;
+  likes: number;
+  comments: number;
+  timestamp: string;
+  commentsList: {
+    id: number;
+    author: {
+      name: string;
+      avatar?: string;
+    };
+    content: string;
+    timestamp: string;
+  }[];
+}
+
+export const RecipesScreen = ({  
+  communityPosts = []
+}: { 
+  communityPosts?: CommunityPost[]
+}) => {
+  const {suggestedRecipes, setSuggestedRecipes} = useRecipes();
+  const {userRecipes,setUserRecipes}=useRecipes()
+
   const [selectedRecipe, setSelectedRecipe] = React.useState<Recipe | null>(null);
   const [isCreatingRecipe, setIsCreatingRecipe] = React.useState(false);
   const [newRecipe, setNewRecipe] = React.useState<Recipe>({
@@ -30,6 +62,7 @@ export const RecipesScreen = ({ suggestedRecipes, userRecipes }: { suggestedReci
     showDetails: false,
   });
   const [animation] = React.useState(new Animated.Value(0));
+  const [activeTab, setActiveTab] = React.useState<'own' | 'community'>('own');
 
   const handleAddIngredient = () => {
     setNewRecipe(prev => ({
@@ -207,85 +240,107 @@ export const RecipesScreen = ({ suggestedRecipes, userRecipes }: { suggestedReci
 
   return (
     <ScrollView style={styles.contentContainer}>
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Ricette Suggerite</Text>
-        {suggestedRecipes.map((recipe) => (
-          <TouchableOpacity 
-            key={recipe.id} 
-            style={styles.recipeRow}
-            onPress={() => toggleRecipe(recipe)}
-          >
-            
-            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between',width: '100%'}}>
-              <Text>{recipe.title}</Text>
-              <Ionicons name="sparkles" size={16} color="#ffbb33"/>
-            </View>
-            {recipe?.showDetails && (
-              <View style={styles.recipeDetails}>
-                <Text style={styles.detailsTitle}>Ingredienti:</Text>
-                {recipe.ingredients.map((ing, index) => (
-                  <View key={index} style={styles.bulletListItem}>
-                    <Text style={styles.bullet}>•</Text>
-                    <Text style={styles.listItemText}>{ing.amount} {ing.unit} {ing.name}</Text>
-                  </View>
-                ))}
-                <Text style={styles.detailsTitle}>Istruzioni:</Text>
-                {recipe.instructions.map((instruction, index) => (
-                  <View key={index} style={styles.bulletListItem}>
-                    <Text style={styles.bullet}>•</Text>
-                    <Text style={styles.listItemText}>{instruction}</Text>
-                  </View>
-                ))}
-              </View>
-            )}
-          </TouchableOpacity>
-        ))}
-      </View>
+      <RecipeTabBar 
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Your Recipes</Text>
-        {userRecipes.map((recipe) => (
-          <TouchableOpacity 
-            key={recipe.id} 
-            style={styles.recipeRow}
-            onPress={() => toggleRecipe(recipe)}
-          > 
-            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between',width: '100%'}}>
-              <Text>{recipe.title}</Text>
-              <View style={styles.likeContainer}>
-              <Ionicons name="heart" size={16} color="#bf5252"/>
-                <Text style={styles.smallText}>{recipe.likes}</Text>
-              </View>
-            </View>
-            {recipe.showDetails && (
-              
-              <View style={styles.recipeDetails}>
-              <Text style={styles.detailsTitle}>Ingredienti:</Text>
-                  { recipe.ingredients.map((ing, index) => (
+      {activeTab === 'own' ? (
+        <>
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Suggested Recipes</Text>
+            {suggestedRecipes.map((recipe) => (
+              <TouchableOpacity 
+                key={recipe.id} 
+                style={styles.recipeRow}
+                onPress={() => toggleRecipe(recipe)}
+              >
+                
+                <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between',width: '100%'}}>
+                  <Text>{recipe.title}</Text>
+                  <Ionicons name="sparkles" size={16} color="#ffbb33"/>
+                </View>
+                {recipe?.showDetails && (
+                  <View style={styles.recipeDetails}>
+                    <Text style={styles.detailsTitle}>Ingredienti:</Text>
+                    {recipe.ingredients.map((ing, index) => (
+                      <View key={index} style={styles.bulletListItem}>
+                        <Text style={styles.bullet}>•</Text>
+                        <Text style={styles.listItemText}>{ing.amount} {ing.unit} {ing.name}</Text>
+                      </View>
+                    ))}
+                    <Text style={styles.detailsTitle}>Istruzioni:</Text>
+                    {recipe.instructions.map((instruction, index) => (
+                      <View key={index} style={styles.bulletListItem}>
+                        <Text style={styles.bullet}>•</Text>
+                        <Text style={styles.listItemText}>{instruction}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Your Recipes</Text>
+            {userRecipes.map((recipe) => (
+              <TouchableOpacity 
+                key={recipe.id} 
+                style={styles.recipeRow}
+                onPress={() => toggleRecipe(recipe)}
+              > 
+                <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between',width: '100%'}}>
+                  <Text>{recipe.title}</Text>
+                  <View style={styles.likeContainer}>
+                  <Ionicons name="heart" size={16} color="#bf5252"/>
+                    <Text style={styles.smallText}>{recipe.likes}</Text>
+                  </View>
+                </View>
+                {recipe.showDetails && (
+                  
+                  <View style={styles.recipeDetails}>
+                  <Text style={styles.detailsTitle}>Ingredienti:</Text>
+                      { recipe.ingredients.map((ing, index) => (
+                        <View key={index} style={styles.bulletListItem}>
+                          <Text style={styles.bullet}>•</Text>
+                          <Text style={styles.listItemText}>{ing.amount} {ing.unit} {ing.name}</Text>
+                        </View>
+                  ))}
+                  <Text style={styles.detailsTitle}>Istruzioni:</Text>
+                  {recipe.instructions.map((instruction, index) => (
                     <View key={index} style={styles.bulletListItem}>
                       <Text style={styles.bullet}>•</Text>
-                      <Text style={styles.listItemText}>{ing.amount} {ing.unit} {ing.name}</Text>
+                      <Text style={styles.listItemText}>{instruction}</Text>
                     </View>
-              ))}
-              <Text style={styles.detailsTitle}>Istruzioni:</Text>
-              {recipe.instructions.map((instruction, index) => (
-                <View key={index} style={styles.bulletListItem}>
-                  <Text style={styles.bullet}>•</Text>
-                  <Text style={styles.listItemText}>{instruction}</Text>
-                </View>
-              ))}
-              </View>
-            )}
-          </TouchableOpacity>
-        ))}
-      </View>
-      <TouchableOpacity 
+                  ))}
+                  </View>
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </>
+      ) : communityPosts && communityPosts.length > 0 ? (
+        <CommunityPosts 
+          posts={communityPosts}
+          onRecipePress={toggleRecipe} 
+        />
+      ) : (
+        <View style={styles.emptyStateContainer}>
+          <Text style={styles.emptyStateText}>
+            Nessun post nella community al momento
+          </Text>
+        </View>
+      )}
+
+      {activeTab =="own"&& <TouchableOpacity 
         style={styles.addRecipeButton}
         onPress={() => setIsCreatingRecipe(true)}
       >
         <Plus size={24} color="white" />
         <Text style={styles.addRecipeButtonText}>Create New Recipe</Text>
       </TouchableOpacity>
+      }
     </ScrollView>
   );
 }; 

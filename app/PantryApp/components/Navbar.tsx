@@ -33,8 +33,8 @@ export const Navbar = ({ activeTab, setActiveTab }: { activeTab: string, setActi
 
       <TouchableOpacity style={styles.navItem} 
         onPress={() => setActiveTab("more")}>
-          <Ionicons name={activeTab === "more" ? "add-circle" : "add-circle-outline"} size={24} color="#000" />
-          <Text style={styles.navText}>More</Text>
+          <Ionicons name={activeTab === "more" ? "person" : "person-outline"} size={24} color="#000" />
+          <Text style={styles.navText}>Profile</Text>
         </TouchableOpacity>
     </View>
   );

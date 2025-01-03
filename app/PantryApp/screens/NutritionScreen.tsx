@@ -5,29 +5,29 @@ import { Dimensions } from 'react-native';
 import { styles } from '../styles';
 
 const NutritionScreen = () => {
-  // Dati di esempio per i grafici
-  const datiCalorie = {
-    labels: ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'],
+  // Example data for charts
+  const calorieData = {
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     datasets: [{
       data: [2000, 1800, 2200, 1900, 2100, 1850, 2300]
     }]
   };
 
-  const datiMacronutrienti = {
-    labels: ['Proteine', 'Carboidrati', 'Grassi'],
+  const macronutrientData = {
+    labels: ['Proteins', 'Carbohydrates', 'Fats'],
     datasets: [{
-      data: [130, 190, 70] // grammi
+      data: [130, 190, 70] // grams
     }]
   };
 
   return (
     <ScrollView style={stylesLocal.container}>
-      <Text style={stylesLocal.titolo} > Statistiche Nutrizionali</Text>
+      <Text style={stylesLocal.title}>Nutritional Statistics</Text>
 
-      <View style={stylesLocal.sezione}>
-        <Text style={stylesLocal.sottotitolo}>Calorie Giornaliere</Text>
+      <View style={stylesLocal.section}>
+        <Text style={stylesLocal.subtitle}>Daily Calories</Text>
         <LineChart
-          data={datiCalorie}
+          data={calorieData}
           width={Dimensions.get('window').width - 60}
           height={200}
           chartConfig={{
@@ -38,28 +38,28 @@ const NutritionScreen = () => {
             color: (opacity = 1) => `rgba(9, 9, 11, ${opacity})`,
           }}
           bezier
-          style={stylesLocal.grafico}
+          style={stylesLocal.chart}
         />
       </View>
 
-      <View style={stylesLocal.sezione}>
-        <Text style={stylesLocal.sottotitolo}>Distribuzione Macronutrienti</Text>
+      <View style={stylesLocal.section}>
+        <Text style={stylesLocal.subtitle}>Macronutrient Distribution</Text>
         <PieChart
           data={[
             {
-              name: 'Proteine',
+              name: 'Proteins',
               population: 130,
               color: '#41407F',
               legendFontColor: '#7F7F7F',
             },
             {
-              name: 'Carboidrati',
+              name: 'Carbohydrates',
               population: 190,
               color: '#ffbb33',
               legendFontColor: '#7F7F7F',
             },
             {
-              name: 'Grassi',
+              name: 'Fats',
               population: 70,
               color: '#ff4444',
               legendFontColor: '#7F7F7F',
@@ -73,28 +73,28 @@ const NutritionScreen = () => {
           accessor="population"
           backgroundColor="transparent"
           paddingLeft="15"
-          style={stylesLocal.grafico}
+          style={stylesLocal.chart}
         />
       </View>
 
-      <View style={stylesLocal.riepilogo}>
-        <Text style={stylesLocal.sottotitolo}>Riepilogo Settimanale</Text>
+      <View style={stylesLocal.summary}>
+        <Text style={stylesLocal.subtitle}>Weekly Summary</Text>
         <View style={stylesLocal.statContainer}>
-          <StatBox titolo="Media Calorie" valore="2021 kcal" />
-          <StatBox titolo="Proteine" valore="60g" />
-          <StatBox titolo="Carboidrati" valore="250g" />
-          <StatBox titolo="Grassi" valore="70g" />
+          <StatBox title="Average Calories" value="2021 kcal" />
+          <StatBox title="Proteins" value="60g" />
+          <StatBox title="Carbohydrates" value="250g" />
+          <StatBox title="Fats" value="70g" />
         </View>
       </View>
     </ScrollView>
   );
 };
 
-// Componente per le statistiche individuali
-const StatBox = ({ titolo, valore }: { titolo: string, valore: string }) => (
+// Component for individual statistics
+const StatBox = ({ title, value }: { title: string, value: string }) => (
   <View style={stylesLocal.statBox}>
-    <Text style={stylesLocal.statTitolo}>{titolo}</Text>
-    <Text style={stylesLocal.statValore}>{valore}</Text>
+    <Text style={stylesLocal.statTitle}>{title}</Text>
+    <Text style={stylesLocal.statValue}>{value}</Text>
   </View>
 );
 
@@ -104,18 +104,18 @@ const stylesLocal = StyleSheet.create({
     backgroundColor: '#ffffff',
     padding: 20,
   },
-  titolo: {
+  title: {
     fontSize: 24,
     fontWeight: '700',
     marginBottom: 20,
     textAlign: 'center',
   },
-  sottotitolo: {
+  subtitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  sezione: {
+  section: {
     display: "flex",
     padding: 10,
     justifyContent: "center",
@@ -125,11 +125,11 @@ const stylesLocal = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e8e8e8',
   },
-  grafico: {
+  chart: {
     marginVertical: 8,
     borderRadius: 16,
   },
-  riepilogo: {
+  summary: {
     marginBottom: 30,
   },
   statContainer: {
@@ -144,15 +144,15 @@ const stylesLocal = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10,
   },
-  statTitolo: {
+  statTitle: {
     fontSize: 14,
     color: '#666',
   },
-  statValore: {
+  statValue: {
     fontSize: 18,
     fontWeight: 'bold',
     marginTop: 5,
   },
 });
 
-export default NutritionScreen; 
+export default NutritionScreen;
